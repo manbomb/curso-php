@@ -4,7 +4,21 @@ class Conta
 {
     private string $cpfTitular;
     private string $nomeTitular;
-    private float $saldo = 0;
+    private float $saldo;
+    public static $numeroDeContas = 0;
+
+    public function __construct(string $cpfTitular, string $nomeTitular)
+    {
+        $this->cpfTitular = $cpfTitular;
+        $this->validaNomeTitular($nomeTitular);
+        $this->nomeTitular = $nomeTitular;
+        $this->saldo = 0;
+        ++self::$numeroDeContas;
+    }
+
+    public function __destruct() {
+        echo "Dump!";
+    }
 
     public function depositar(float $valor): void
     {
@@ -37,16 +51,6 @@ class Conta
 
     }
 
-    public function defineCpfTitular(string $cpf)
-    {
-        $this->cpfTitular = $cpf;
-    }
-
-    public function defineNomeTitular(string $nome)
-    {
-        $this->nomeTitular = $nome;
-    }
-
     public function recuperarCpfTitular(): string
     {
         return $this->cpfTitular;
@@ -56,19 +60,23 @@ class Conta
     {
         return $this->nomeTitular;
     }
+
+    private function validaNomeTitular(string $nomeTitular): void
+    {
+        if (mb_strlen($nomeTitular) < 5) {
+            echo "Nome precisa ter pelo menos 5 caracteres";
+            exit();
+        }
+    }
 }
 
-$umaNovaConta = new Conta();
-
-$umaNovaConta->defineCpfTitular('556.998.077-08');
-$umaNovaConta->defineNomeTitular('Sérgio Avilla');
+$umaNovaConta = new Conta('556.998.077-08', 'Sérgio Avilla');
 $umaNovaConta->depositar(400);
 
-$segundaConta = new Conta();
-
-$segundaConta->defineCpfTitular('667.001.077-08');
-$segundaConta->defineNomeTitular('Kauane');
-
+$segundaConta = new Conta('667.001.077-08', 'Kauane');
 $umaNovaConta->transferir(100, $segundaConta);
 
 var_dump($segundaConta);
+var_dump(Conta::$numeroDeContas);
+
+unset($segundaConta);
